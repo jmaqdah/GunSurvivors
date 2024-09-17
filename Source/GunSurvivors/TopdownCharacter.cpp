@@ -93,12 +93,34 @@ void ATopdownCharacter::MoveTriggered(const FInputActionValue& Value)
     if (CanMove)
     {
         MovementDirection = MoveActionValue;
+        // Set the flipbook to the run flipbook
+        CharacterFlipbook->SetFlipbook(RunFlipbook);
+        // Set the direction of the flip book depending on the direction of running:
+        FVector FlipbookScale = CharacterFlipbook->GetComponentScale();
+        // If going left
+        if (MovementDirection.X < 0.0f)
+        {
+            if (FlipbookScale.X > 0.0f)
+            {
+                CharacterFlipbook->SetWorldScale3D(FVector(-1.0f, 1.0f, 1.0f));
+            }
+        }
+        // If going right
+        else if (MovementDirection.X > 0.0f)
+        {
+            if (FlipbookScale.X < 0.0f)
+            {
+                CharacterFlipbook->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+            }
+        }
     }
 }
 
 void ATopdownCharacter::MoveCompleted(const FInputActionValue& Value)
 {
     MovementDirection = FVector2D(0.0f, 0.0f);
+    // Reset the player flipbook
+    CharacterFlipbook->SetFlipbook(IdleFlipbook);
 }
 
 void ATopdownCharacter::Shoot(const FInputActionValue& Value)
