@@ -35,6 +35,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     UInputAction* ShootAction;
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float MovementSpeed = 100.0f;
+    
+    UPROPERTY(BlueprintReadWrite)
+    FVector2D MovementDirection;
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    bool CanMove = true;
+    
+    
 	ATopdownCharacter();
 
 	virtual void BeginPlay() override;

@@ -33,9 +33,33 @@ void ATopdownCharacter::BeginPlay()
 	
 }
 
+// Called each frame bu unreal
 void ATopdownCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    
+    if (CanMove)
+    {
+        // Check if atleast one of the keys are bing pressed by the user
+        if (MovementDirection.Length() > 0.0f)
+        {
+            // Normalise the vector such that we have consistent speeds
+            // for different lengths of movement direction vectors. Note when the
+            // user pressed two keys at the same time the vector is larger than if only
+            // one key is pressed.
+            if (MovementDirection.Length() > 1.0f)
+            {
+                MovementDirection.Normalize();
+            }
+            
+            FVector2D DistanceToMove = MovementDirection * MovementSpeed * DeltaTime;
+            
+            FVector CurrentLocation = GetActorLocation();
+            FVector NewLocation = CurrentLocation + FVector(DistanceToMove.X, 0.0f, DistanceToMove.Y);
+            
+            SetActorLocation(NewLocation);
+        }
+    }
 
 }
 
@@ -65,12 +89,16 @@ void ATopdownCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 void ATopdownCharacter::MoveTriggered(const FInputActionValue& Value)
 {
     FVector2D MoveActionValue = Value.Get<FVector2D>();
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::White, MoveActionValue.ToString());
+    
+    if (CanMove)
+    {
+        MovementDirection = MoveActionValue;
+    }
 }
 
 void ATopdownCharacter::MoveCompleted(const FInputActionValue& Value)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("move completed"));
+    MovementDirection = FVector2D(0.0f, 0.0f);
 }
 
 void ATopdownCharacter::Shoot(const FInputActionValue& Value)
