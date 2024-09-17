@@ -5,10 +5,10 @@
       location = "container:"
       name = "Engine">
       <FileRef
-         location = "group:../../UnrealProjects/GunSurvivors/Intermediate/ProjectFiles/UnrealEditor (Mac).xcodeproj">
+         location = "group:Intermediate/ProjectFiles/UnrealEditor (Mac).xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:../../UnrealProjects/GunSurvivors/Intermediate/ProjectFiles/UnrealGame (Mac).xcodeproj">
+         location = "group:Intermediate/ProjectFiles/UnrealGame (Mac).xcodeproj">
       </FileRef>
    </Group>
    <Group
@@ -18,10 +18,10 @@
          location = "container:"
          name = "GunSurvivors">
          <FileRef
-            location = "group:../../UnrealProjects/GunSurvivors/Intermediate/ProjectFiles/GunSurvivors (Mac).xcodeproj">
+            location = "group:Intermediate/ProjectFiles/GunSurvivors (Mac).xcodeproj">
          </FileRef>
          <FileRef
-            location = "group:../../UnrealProjects/GunSurvivors/Intermediate/ProjectFiles/GunSurvivorsEditor (Mac).xcodeproj">
+            location = "group:Intermediate/ProjectFiles/GunSurvivorsEditor (Mac).xcodeproj">
          </FileRef>
       </Group>
    </Group>
