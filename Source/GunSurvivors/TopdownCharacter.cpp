@@ -33,6 +33,26 @@ void ATopdownCharacter::BeginPlay()
 	
 }
 
+bool ATopdownCharacter::IsInMapBoundsHorizontal(float XPos)
+{
+    bool Result = true;
+    
+    // Result is true if the XPos of the player is within bounds of the HorizontalLimits
+    Result = (XPos > HorizontalLimits.X) && (XPos < HorizontalLimits.Y);
+    
+    return Result;
+}
+
+bool ATopdownCharacter::IsInMapBoundsVertical(float ZPos)
+{
+    bool Result = true;
+    
+    // Result is true if the ZPos of the player is within bounds of the VerticalLimits
+    Result = (ZPos > VerticalLimits.X) && (ZPos < VerticalLimits.Y);
+    
+    return Result;
+}
+
 // Called each frame bu unreal
 void ATopdownCharacter::Tick(float DeltaTime)
 {
@@ -55,8 +75,22 @@ void ATopdownCharacter::Tick(float DeltaTime)
             FVector2D DistanceToMove = MovementDirection * MovementSpeed * DeltaTime;
             
             FVector CurrentLocation = GetActorLocation();
-            FVector NewLocation = CurrentLocation + FVector(DistanceToMove.X, 0.0f, DistanceToMove.Y);
+            // First move horizontally but check if not in map bounds as well
+            FVector NewLocation = CurrentLocation + FVector(DistanceToMove.X, 0.0f, 0.0f);
+            if (!IsInMapBoundsHorizontal(NewLocation.X))
+            {
+                // Bring back the player to origanl horizontal position
+                NewLocation -= FVector(DistanceToMove.X, 0.0f, 0.0f);
+            }
+            // Now attempt to move vertically
+            NewLocation += FVector(0.0f, 0.0f, DistanceToMove.Y);
+            if (!IsInMapBoundsVertical(NewLocation.Z))
+            {
+                // Bring back the player to origanl vertical position
+                NewLocation -= FVector(0.0f, 0.0f, DistanceToMove.Y);
+            }
             
+            // Set the new player location
             SetActorLocation(NewLocation);
         }
     }
