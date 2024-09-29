@@ -2,6 +2,8 @@
 
 #include "TopdownCharacter.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 ATopdownCharacter::ATopdownCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -11,6 +13,15 @@ ATopdownCharacter::ATopdownCharacter()
     
     CharacterFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CharacterFlipbook"));
     CharacterFlipbook->SetupAttachment(CapsuleComp);
+    
+    GunParent = CreateDefaultSubobject<USceneComponent>(TEXT("GunParent"));
+    GunParent->SetupAttachment(CapsuleComp);
+    
+    GunSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("GunSpreite"));
+    GunSprite->SetupAttachment(GunParent);
+    
+    BulletSpawnPosition = CreateDefaultSubobject<USceneComponent>(TEXT("BulletSpawnPosition"));
+    BulletSpawnPosition->SetupAttachment(GunSprite);
 }
 
 void ATopdownCharacter::BeginPlay()
@@ -22,6 +33,8 @@ void ATopdownCharacter::BeginPlay()
     APlayerController* PlayerController = Cast<APlayerController>(Controller);
     if (PlayerController)
     {
+        // Setting the mouse cursor to be visible
+        PlayerController->SetShowMouseCursor(true);
         // Get the player's subsystem
         UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
         if (Subsystem)
@@ -58,6 +71,7 @@ void ATopdownCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
     
+    // Moving the player
     if (CanMove)
     {
         // Check if atleast one of the keys are bing pressed by the user
@@ -93,6 +107,25 @@ void ATopdownCharacter::Tick(float DeltaTime)
             // Set the new player location
             SetActorLocation(NewLocation);
         }
+    }
+    
+    // Rotating the gun
+    // Get the player controller to get the cursor world coordinates
+    APlayerController* PlayerController = Cast<APlayerController>(Controller);
+    if (PlayerController)
+    {
+        FVector MouseWorldLocation, MouseWorldDirection;
+        // Arguments are passed by reference
+        PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
+        
+        // Find the angle between the gun parent/player (start location) and cursor (target location)
+        FVector CurrentLocation = GetActorLocation();
+        FVector Start = FVector(CurrentLocation.X, 0.0f, CurrentLocation.Z);
+        FVector Target = FVector(MouseWorldLocation.X, 0.0f, MouseWorldLocation.Z);
+        FRotator GunParentRotator = UKismetMathLibrary::FindLookAtRotation(Start, Target);
+        
+        // Set the rotation to the gun parent
+        GunParent->SetRelativeRotation(GunParentRotator);
     }
 
 }
