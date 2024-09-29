@@ -17,7 +17,7 @@ ATopdownCharacter::ATopdownCharacter()
     GunParent = CreateDefaultSubobject<USceneComponent>(TEXT("GunParent"));
     GunParent->SetupAttachment(CapsuleComp);
     
-    GunSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("GunSpreite"));
+    GunSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("GunSprite"));
     GunSprite->SetupAttachment(GunParent);
     
     BulletSpawnPosition = CreateDefaultSubobject<USceneComponent>(TEXT("BulletSpawnPosition"));
@@ -192,6 +192,45 @@ void ATopdownCharacter::MoveCompleted(const FInputActionValue& Value)
 
 void ATopdownCharacter::Shoot(const FInputActionValue& Value)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("shoot"));
+    if (CanShoot)
+    {
+        CanShoot = false;
+        
+        // Spawn the bullet actor
+        ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletActorToSpawn, BulletSpawnPosition->GetComponentLocation(), FRotator(0.0f, 0.0f, 0.0f));
+        
+        // Check if the spawning worked
+        check(Bullet);
+        
+        // Get the player controller to get the cursor world coordinates
+        APlayerController* PlayerController = Cast<APlayerController>(Controller);
+        // Check if PlayerController is valid
+        check(PlayerController);
+        
+        FVector MouseWorldLocation, MouseWorldDirection;
+        // Arguments are passed by reference
+        PlayerController->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
+        
+        // Calculate bullet direction
+        FVector CurrentLocation = GetActorLocation();
+        FVector2D BulletDirection = FVector2D(MouseWorldLocation.X - CurrentLocation.X, MouseWorldLocation.Z - CurrentLocation.Z);
+        // Get rid of the magnitude (we just care about the direction
+        BulletDirection.Normalize();
+        
+        // Launch the bullet
+        float BulletSpeed = 300.0f;
+        Bullet->Launch(BulletDirection, BulletSpeed);
+        
+        
+        // Set the timer for gun cool down
+        // 1.0f = in rate, false = dont loop, DeleteTime = inital time
+        GetWorldTimerManager().SetTimer(ShootCooldownTimer, this, &ATopdownCharacter::OnShootCooldownTimerTimeOut, 1.0f, false, ShootCooldownDurationInSeconds);
+        
+    }
 }
 
+void ATopdownCharacter::OnShootCooldownTimerTimeOut()
+{
+    // Allow the user to shoot again after cool down of gun is finished
+    CanShoot = true;
+}
