@@ -2,8 +2,7 @@
 <Workspace
    version = "1.0">
    <Group
-      location = "container:"
-      name = "Engine">
+      location = "container:"      name = "Engine">
       <FileRef
          location = "group:Intermediate/ProjectFiles/UnrealEditor (Mac).xcodeproj">
       </FileRef>
@@ -12,11 +11,9 @@
       </FileRef>
    </Group>
    <Group
-      location = "container:"
-      name = "Games">
+      location = "container:"      name = "Games">
       <Group
-         location = "container:"
-         name = "GunSurvivors">
+         location = "container:"      name = "GunSurvivors">
          <FileRef
             location = "group:Intermediate/ProjectFiles/GunSurvivors (Mac).xcodeproj">
          </FileRef>
@@ -26,23 +23,18 @@
       </Group>
    </Group>
    <Group
-      location = "container:"
-      name = "Programs">
+      location = "container:"      name = "Programs">
       <Group
-         location = "container:"
-         name = "Automation">
+         location = "container:"      name = "Automation">
       </Group>
       <Group
-         location = "container:"
-         name = "UnrealBuildTool.Plugins">
+         location = "container:"      name = "UnrealBuildTool.Plugins">
       </Group>
       <Group
-         location = "container:"
-         name = "Shared">
+         location = "container:"      name = "Shared">
       </Group>
    </Group>
    <Group
-      location = "container:"
-      name = "Rules">
+      location = "container:"      name = "Rules">
    </Group>
 </Workspace>
