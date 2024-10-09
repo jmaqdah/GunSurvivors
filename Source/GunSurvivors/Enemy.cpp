@@ -22,20 +22,6 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-    
-    if (!Player)
-    {
-        // Look at all the actors in the game and return a pointer to a ATopdownCharacter that has been found
-        AActor* PlayerActor = UGameplayStatics::GetActorOfClass(GetWorld(), ATopdownCharacter::StaticClass());
-        if (PlayerActor)
-        {
-            // If a ATopdownCharacter has been found, set it to Player
-            Player = Cast<ATopdownCharacter>(PlayerActor);
-            // If Player is found then the enemy can follow the player
-            CanFollow = true;
-        }
-    }
-	
 }
 
 
