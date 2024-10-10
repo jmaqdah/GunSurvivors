@@ -8,6 +8,7 @@
 
 #include "Enemy.h"
 #include "TopdownCharacter.h"
+#include "GunSurvivorsGameMode.h"
 
 #include "EnemySpawner.generated.h"
 
@@ -42,6 +43,8 @@ public:
     
     FTimerHandle SpawnTimer;
     
+    AGunSurvivorsGameMode* MyGameMode;
+    
 	AEnemySpawner();
 
 	virtual void BeginPlay() override;
@@ -54,5 +57,8 @@ public:
     void SpawnEnemy();
     
     void SetupEnemy(AEnemy* Enemy);
+    
+    UFUNCTION()
+    void OnEnemyDied();
 
 };

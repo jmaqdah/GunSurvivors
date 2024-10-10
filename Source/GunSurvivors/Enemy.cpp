@@ -93,6 +93,9 @@ void AEnemy::Die()
     // Decrease the sort priority such that the alive enemies are seen on top of the dead ones
     EnemyFlipbook->SetTranslucentSortPriority(-5);
     
+    // Fire the delegate
+    EnemyDiedDelegate.Broadcast();
+    
     // Set the timer to remove the dead enemy
     float DestroyTime = 10.0f;
     GetWorldTimerManager().SetTimer(DestroyTimer, this, &AEnemy::OnDestroyTimerTimeOut, 1.0f, false, DestroyTime);

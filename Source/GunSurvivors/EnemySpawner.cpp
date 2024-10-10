@@ -13,6 +13,14 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
     
+    // Get a reference to the game mode
+    AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
+    if (GameMode)
+    {
+        MyGameMode = Cast<AGunSurvivorsGameMode>(GameMode);
+        check(MyGameMode);
+    }
+    
     // Look at all the actors in the game and return a pointer to a ATopdownCharacter that has been found
     AActor* PlayerActor = UGameplayStatics::GetActorOfClass(GetWorld(), ATopdownCharacter::StaticClass());
     if (PlayerActor)
@@ -92,6 +100,15 @@ void AEnemySpawner::SetupEnemy(AEnemy* Enemy)
         // Assign the player to the enemy and allow it to move
         Enemy->Player = Player;
         Enemy->CanFollow = true;
+        // Bind the delegate to the OnEnemyDied function
+        Enemy->EnemyDiedDelegate.AddDynamic(this, &AEnemySpawner::OnEnemyDied);
     }
+}
+
+// This will be called when EnemyDiedDelegate is broadcasted. See AEnemy::Die()
+void AEnemySpawner::OnEnemyDied()
+{
+    int ScoreToAdd = 10;
+    MyGameMode->AddScore(ScoreToAdd);
 }
 
