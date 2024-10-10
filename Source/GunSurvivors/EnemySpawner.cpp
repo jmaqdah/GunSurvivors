@@ -27,6 +27,8 @@ void AEnemySpawner::BeginPlay()
     {
         // If a ATopdownCharacter has been found, set it to Player
         Player = Cast<ATopdownCharacter>(PlayerActor);
+        // Bind the player died delegate
+        Player->PlayerDiedDelegate.AddDynamic(this, &AEnemySpawner::OnPlayerDied);
     }
     
     StartSpawning();
@@ -110,5 +112,28 @@ void AEnemySpawner::OnEnemyDied()
 {
     int ScoreToAdd = 10;
     MyGameMode->AddScore(ScoreToAdd);
+}
+
+void AEnemySpawner::OnPlayerDied()
+{
+    StopSpawning();
+    
+    // Freeze all enemies:
+    // Get a list of all enemt actors
+    TArray<AActor*> EnemyArray;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), EnemyArray);
+    // Loop over enemies
+    for (AActor* EnemyActor : EnemyArray)
+    {
+        AEnemy* Enemy = Cast<AEnemy>(EnemyActor);
+        if (Enemy && Enemy->IsAlive)
+        {
+            // Disable enemy
+            Enemy->CanFollow = false;
+        }
+    }
+    
+    // Retsart the game
+    MyGameMode->RestartGame();
 }
 

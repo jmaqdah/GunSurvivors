@@ -3,6 +3,8 @@
 #include "TopdownCharacter.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Enemy.h"
 
 ATopdownCharacter::ATopdownCharacter()
 {
@@ -43,6 +45,8 @@ void ATopdownCharacter::BeginPlay()
             Subsystem->AddMappingContext(InputMappingContext, 0);
         }
     }
+    
+    CapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATopdownCharacter::OverlapBegin);
 	
 }
 
@@ -187,7 +191,7 @@ void ATopdownCharacter::MoveCompleted(const FInputActionValue& Value)
 {
     MovementDirection = FVector2D(0.0f, 0.0f);
     // Reset the player flipbook
-    CharacterFlipbook->SetFlipbook(IdleFlipbook);
+    if (IsAlive) CharacterFlipbook->SetFlipbook(IdleFlipbook);
 }
 
 void ATopdownCharacter::Shoot(const FInputActionValue& Value)
@@ -221,10 +225,12 @@ void ATopdownCharacter::Shoot(const FInputActionValue& Value)
         float BulletSpeed = 300.0f;
         Bullet->Launch(BulletDirection, BulletSpeed);
         
-        
         // Set the timer for gun cool down
         // 1.0f = in rate, false = dont loop, DeleteTime = inital time
         GetWorldTimerManager().SetTimer(ShootCooldownTimer, this, &ATopdownCharacter::OnShootCooldownTimerTimeOut, 1.0f, false, ShootCooldownDurationInSeconds);
+        
+        // Play the bullet shoot sound
+        UGameplayStatics::PlaySound2D(GetWorld(), BulletShootSound);
         
     }
 }
@@ -232,5 +238,26 @@ void ATopdownCharacter::Shoot(const FInputActionValue& Value)
 void ATopdownCharacter::OnShootCooldownTimerTimeOut()
 {
     // Allow the user to shoot again after cool down of gun is finished
-    CanShoot = true;
+    if (IsAlive) CanShoot = true;
+}
+
+void ATopdownCharacter::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    // Check if the object the player collided with is an enemy
+    AEnemy* Enemy = Cast<AEnemy>(OtherActor);
+    if (Enemy && Enemy->IsAlive)
+    {
+        if (IsAlive)
+        {
+            // Disable the player
+            IsAlive = false;
+            CanMove = false;
+            CanShoot = false;
+            
+            // Play the die sound
+            UGameplayStatics::PlaySound2D(GetWorld(), DieSound);
+            
+            PlayerDiedDelegate.Broadcast();
+        }
+    }
 }

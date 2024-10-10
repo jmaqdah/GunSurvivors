@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "PaperFlipbookComponent.h"
 
+#include "Sound/SoundBase.h"
 #include "Engine/TimerHandle.h"
 
 #include "TopdownCharacter.h"
@@ -29,6 +30,9 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UPaperFlipbook* DeadFlipbookAsset;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USoundBase* DieSound;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     ATopdownCharacter* Player;

@@ -96,6 +96,9 @@ void AEnemy::Die()
     // Fire the delegate
     EnemyDiedDelegate.Broadcast();
     
+    // Play the die sound
+    UGameplayStatics::PlaySound2D(GetWorld(), DieSound);
+    
     // Set the timer to remove the dead enemy
     float DestroyTime = 10.0f;
     GetWorldTimerManager().SetTimer(DestroyTimer, this, &AEnemy::OnDestroyTimerTimeOut, 1.0f, false, DestroyTime);
